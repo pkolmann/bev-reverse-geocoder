@@ -98,7 +98,7 @@ if (!is_numeric($limit) || intval($limit) > $max_limit || intval($limit) < 0) {
 $query = <<<SQL
   SELECT b.municipality, b.locality, b.postcode, b.street, 
           CASE 
-            WHEN b.subaddress != '' THEN b.house_number || ' / ' || b.subaddress 
+            WHEN b.subaddress != '' THEN b.house_number || b.subaddress 
             ELSE b.house_number 
           END AS house_number, b.house_name, b.address_type,
           ST_Distance(ST_SetSRID(ST_MakePoint(\$1, \$2), \$3), b.point) AS distance,
