@@ -1,0 +1,65 @@
+.leaflet-legend {
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    background: #fff;
+    border-radius: 5px;
+}
+
+a.leaflet-legend-toggle {
+    width: 36px;
+    height: 36px;
+}
+.leaflet-touch .leaflet-legend-toggle {
+    width: 44px;
+    height: 44px;
+}
+
+.leaflet-legend  .leaflet-legend-list,
+.leaflet-legend-expanded .leaflet-legend-toggle {
+    display: none;
+}
+
+.leaflet-legend-expanded .leaflet-legend-list {
+    display: block;
+    position: relative;
+    padding: 0;
+}
+
+a.leaflet-legend-toggle {
+    color: #000 !important;
+    text-decoration: none;
+    padding: 6px;
+}
+a.leaflet-legend-toggle i {
+    font-size: 30px;
+    padding: 6px 0px;
+}
+
+.leaflet-legend-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+}
+
+.leaflet-legend-list {
+    padding: 6px;
+}
+
+.leaflet-legend-item {
+    white-space: nowrap;
+    padding-bottom: 2px;
+}
+.leaflet-legend-text, .leaflet-legend-color {
+    display: inline-block;
+}
+.leaflet-legend-color {
+    width: 20px;
+    heigth: 20px;
+    margin-right: 4px;
+}
+.leaflet-touch .leaflet-legend {
+    box-shadow: none;
+}
+.leaflet-touch .leaflet-legend {
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+}

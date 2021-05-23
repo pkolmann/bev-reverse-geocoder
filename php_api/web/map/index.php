@@ -36,6 +36,9 @@ $bevDate = $line['date'];
     <script src="leaflet-hash.js"></script>
     <script src="svg-icon.js"></script>
 
+    <link rel="stylesheet" href="leaflet-legend.css">
+    <script src="leaflet-legend.js"></script>
+
     <link rel="stylesheet" href="easy-button.css">
     <script src="easy-button.js"></script>
 
@@ -274,6 +277,24 @@ $bevDate = $line['date'];
         position.updateHTML(lat, lng);
     });
 
+
+    L.control.legend({
+        items: [
+            {color: colors['01'], label: 'Gebäude mit einer Wohnung'},
+            {color: colors['02'], label: 'Gebäude mit zwei oder mehr Wohnungen'},
+            {color: colors['03'], label: 'Wohngebäude für Gemeinschaften'},
+            {color: colors['04'], label: 'Hotels und ähnliche Gebäude'},
+            {color: colors['05'], label: 'Bürogebäude'},
+            {color: colors['06'], label: 'Groß- und Einzelhandelsgebäude'},
+            {color: colors['07'], label: 'Gebäude des Verkehrs- und Nachrichtenwesens'},
+            {color: colors['08'], label: 'Industrie- und Lagergebäude'},
+            {color: colors['09'], label: 'Gebäude für Kultur- und Freizeitzwecke sowie<br>das Bildungs- und Gesundheitswesen'},
+            {color: '#ffbfc2', label: 'Adresse ohne Gebäudetyp'},
+        ],
+        collapsed: true,
+        // insert different label for the collapsed legend button.
+        buttonHtml: 'Legende der Gebäudetypen'
+    }).addTo(map);
 </script>
 
 
