@@ -1,15 +1,17 @@
 # BEV Address Data Reverse Geocoder
 
-This services converts coordinates into an array of address data sets released by the Bundesamt für Eich- und Vermessungswesen (BEV) in Austria. You can see the service in action and an API description [here](https://bev-reverse-geocoder.thomaskonrad.at/).
+This services converts coordinates into an array of address data sets released by the Bundesamt für Eich- und
+Vermessungswesen (BEV) in Austria. You can see the service in action and an API description
+[here](https://bev.kolmann.at/).
 
-Data: © Österreichisches Adressregister 2017, N 23806/2017 (Stichtagsdaten vom 02.10.2016)
+Data: © Österreichisches Adressregister 2021, N 23806/2017 (Stichtagsdaten vom 01.04.2021)
 
 ## Example
 
 The request
 
 ```http
-https://bev-reverse-geocoder.thomaskonrad.at/reverse-geocode/json?lat=48.20808&lon=16.37236&distance=50&limit=3&epsg=4326
+https://bev.kolmann.at/reverse-geocode.php?lat=48.20808&lon=16.37236&distance=50&limit=3&epsg=4326
 ```
 
 gives the following result:
@@ -69,7 +71,7 @@ Some municipalities have a specific combination of postcode and street multiple 
 
 ## Requirements
 
-This Python Django project requires Django 1.10.*.
+This Python Django project requires Django 1.10.*. The PHP API requires PHP with postgresql support.
 
 ## Importing the Addresses into PostgreSQL
 

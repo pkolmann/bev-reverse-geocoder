@@ -87,20 +87,20 @@ def main():
 
                 statement = "INSERT INTO " + \
                             args.table + \
-                            "(municipality, locality, postcode, street, house_number, subaddress, house_name, address_type, point)" \
-                            "VALUES (%s, %s, %s, %s, %s, %s, %s, 'unknown', ST_SetSRID(ST_MakePoint(%s, %s),4326))"
+                            "(municipality, locality, postcode, street, house_number, subaddress, house_name, address_type, house_attribute, adrcd, subcd, point)" \
+                            "VALUES (%s, %s, %s, %s, %s, %s, %s, 'unknown', %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s),4326))"
 
                 # Do some basic data validation.
-                if len(line) == 19 and (is_float(line[8]) or is_float(line[11])) and (is_float(line[9]) or is_float(line[12])):
+                if len(line) == 20 and (is_float(line[8]) or is_float(line[11])) and (is_float(line[9]) or is_float(line[12])):
                     try:
                         # if haus_x is not float, use adress_x adress_y
                         if is_float(line[8]):
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[8], line[9],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[15], line[16], line[8], line[9],)
                            )
                         else:
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[11], line[12],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[15], line[16], line[11], line[12],)
                            )
 
                     except Exception as e:
