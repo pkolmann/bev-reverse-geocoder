@@ -52,6 +52,11 @@ $date = date("d. m. Y", strtotime($line['date']));
                 margin-bottom: 15px;
                 font-size: 40px;
             }
+
+            h2 {
+                margin-bottom: 10px;
+            }
+            
         </style>
 
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -77,17 +82,15 @@ $date = date("d. m. Y", strtotime($line['date']));
     <h1>BEV Address Data Reverse Geocoder</h1>
 
     <p>Welcome to the Reverse Geocoder for the Address data released by the Bundesamt für Eich- und Vermessungswesen
-    (BEV) in Austria! This services converts coordinates into an array of address data sets. The source code of this
-    application can be found <a href="https://github.com/thomaskonrad/bev-reverse-geocoder">here</a>.</p>
+    (BEV) in Austria! This services converts coordinates into an array of address data sets. The source code of the original
+    application can be found <a href="https://github.com/thomaskonrad/bev-reverse-geocoder">here</a>. The source code of my
+    improved version can be found <a href="https://github.com/pkolmann/bev-reverse-geocoder">here</a>.</p>
 
     <div class="alert alert-success" role="alert"><strong>Data</strong>: © Österreichisches Adressregister 2017, N 23806/2017 (Stichtagsdaten vom <?php print $date; ?>)</div>
 
+    <h2>Map</h2>
+    <p>A map view of the BEV address data can be found <a href="map/">here</a>.</p>
     <h2>Example</h2>
-
-    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-        <li class="active"><a href="#json" data-toggle="tab">JSON</a></li>
-<!--        <li><a href="#xml" data-toggle="tab">XML</a></li> -->
-    </ul>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="json">
             <h3>JSON</h3>
@@ -144,63 +147,6 @@ $date = date("d. m. Y", strtotime($line['date']));
 }</pre>
         </div>
 
-<!-- NOT IMPLEMENTED!!
-        <div class="tab-pane" id="xml">
-            <h3>XML</h3>
-
-            <p><a href="reverse-geocode/xml?lat=48.20808&lon=16.37236&distance=50&limit=3&epsg=4326" class="btn btn-primary btn-lg">Try it yourself!</a></p>
-
-            <pre>https://bev-reverse-geocoder.thomaskonrad.at/reverse-geocode/xml?lat=48.20808&lon=16.37236&distance=50&limit=3&epsg=4326</pre>
-
-    <pre>&lt;reverse_geocode_results&gt;
-    &lt;copyright&gt;© © Österreichisches Adressregister 2017, N 23806/2017 (Stichtagsdaten vom {{ date }})&lt;/copyright&gt;
-    &lt;address_date&gt;2016-10-02&lt;/address_date&gt;
-    &lt;results>
-        &lt;address&gt;
-            &lt;address_type&gt;street&lt;/address_type&gt;
-            &lt;municipality&gt;Wien&lt;/municipality&gt;
-            &lt;locality&gt;Innere Stadt&lt;/locality&gt;
-            &lt;postcode&gt;1010&lt;/postcode&gt;
-            &lt;street&gt;Stephansplatz&lt;/street&gt;
-            &lt;house_number&gt;2&lt;/house_number&gt;
-            &lt;house_name /&gt;
-            &lt;lat&gt;48.208111&lt;/lat&gt;
-            &lt;lon&gt;16.372235&lt;/lon&gt;
-            &lt;distance&gt;14.22375697&lt;/distance&gt;
-            <municipality_has_ambiguous_addresses>False</municipality_has_ambiguous_addresses>
-        &lt;/address&gt;
-        &lt;address&gt;
-            &lt;address_type&gt;street&lt;/address_type&gt;
-            &lt;municipality&gt;Wien&lt;/municipality&gt;
-            &lt;locality&gt;Innere Stadt&lt;/locality&gt;
-            &lt;postcode&gt;1010&lt;/postcode&gt;
-            &lt;street&gt;Singerstraße&lt;/street&gt;
-            &lt;house_number&gt;3&lt;/house_number&gt;
-            &lt;house_name /&gt;
-            &lt;lat&gt;48.207893&lt;/lat&gt;
-            &lt;lon&gt;16.372354&lt;/lon&gt;
-            &lt;distance&gt;19.98897208&lt;/distance&gt;
-            <municipality_has_ambiguous_addresses>False</municipality_has_ambiguous_addresses>
-        &lt;/address&gt;
-        &lt;address&gt;
-            &lt;address_type&gt;street&lt;/address_type&gt;
-            &lt;municipality&gt;Wien&lt;/municipality&gt;
-            &lt;locality&gt;Innere Stadt&lt;/locality&gt;
-            &lt;postcode&gt;1010&lt;/postcode&gt;
-            &lt;street&gt;Stephansplatz&lt;/street&gt;
-            &lt;house_number&gt;3A&lt;/house_number&gt;
-            &lt;house_name /&gt;
-            &lt;lat&gt;48.20809&lt;/lat&gt;
-            &lt;lon&gt;16.372547&lt;/lon&gt;
-            &lt;distance&gt;20.721456927&lt;/distance&gt;
-            <municipality_has_ambiguous_addresses>False</municipality_has_ambiguous_addresses>
-        &lt;/address&gt;
-    &lt;/results&gt;
-    &lt;status&gt;ok&lt;/status&gt;
-&lt;/reverse_geocode_results&gt;</pre>
-        </div>
--->
-
     </div>
 
     <script type="text/javascript">
@@ -246,7 +192,9 @@ $date = date("d. m. Y", strtotime($line['date']));
       <hr>
 
       <footer>
-        <p>&copy; <a href="https://thomaskonrad.at">Thomas Konrad</a> 2017</p>
+      <p>&copy; <a href="https://thomaskonrad.at">Thomas Konrad</a> 2017 | 
+         &copy; <a href="https://www.kolmann.at">Philpp Kolmann</a> 2021
+      </p>
       </footer>
     </div> <!-- /container -->
 
