@@ -34,7 +34,6 @@ $bevDate = $line['date'];
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
     <script src="leaflet.ajax.min.js"></script>
     <script src="leaflet-hash.js"></script>
-    <script src="svg-icon.js"></script>
 
     <link rel="stylesheet" href="leaflet-legend.css">
     <script src="leaflet-legend.js"></script>
@@ -64,17 +63,18 @@ $bevDate = $line['date'];
 <div id='map'></div>
 
 <script>
-   let markers = {};
+    let markers = {};
+    // https://mokole.com/palette.html
     const colors = {
-        '01': '#ff0000',
-        '02': '#e6f200',
-        '03': '#003973',
-        '04': '#d96cbe',
-        '05': '#f20000',
-        '06': '#add96c',
-        '07': '#203040',
-        '08': '#806078',
-        '09': '#663333'
+        '01': '#ff0000', // Gebäude mit einer Wohnung
+        '02': '#ffd700', // Gebäude mit zwei oder mehr Wohnungen
+        '03': '#a020f0', // Wohngebäude für Gemeinschaften
+        '04': '#ff1493', // Hotels und ähnliche Gebäude
+        '05': '#1e90ff', // Bürogebäude
+        '06': '#00ff00', // Groß- und Einzelhandelsgebäude
+        '07': '#006400', // Gebäude des Verkehrs- und Nachrichtenwesens
+        '08': '#00ffff', // Industrie- und Lagergebäude
+        '09': '#bc8f8f'  // Gebäude für Kultur- und Freizeitzwecke sowie das Bildungs- und Gesundheitswesen
     };
 
     // https://leaflet-extras.github.io/leaflet-providers/preview/
@@ -214,11 +214,9 @@ $bevDate = $line['date'];
                     ) {
                         markerColor = colors[geoJsonPoint.properties['house_attribute']];
                     }
-                    // https://github.com/iatkin/leaflet-svgicon
-                    return L.marker.svgMarker(latlng, {
-                        iconOptions: {
-                            color: markerColor
-                        }
+                    return L.circleMarker(latlng, {
+                        color: markerColor,
+                        fillOpacity: 0.5
                     });
                 }
             }
