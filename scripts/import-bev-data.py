@@ -47,10 +47,15 @@ def main():
         try:
             statement = "TRUNCATE TABLE bev_date"
             cursor.execute(statement)
+        except Exception as e:
+            print("Unable delete old date. (Error: %s)" % e.__str__().strip())
+            sys.exit(1)
+
+        try:
             statement = "INSERT INTO bev_date VALUES(%s)"
             cursor.execute(statement, (args.date,))
-        except:
-            print("Unable to insert the date. Is the format correct?")
+        except Exception as e:
+            print("Unable to insert the date. Is the format correct? (Error: %s)" % e.__str__().strip())
             sys.exit(1)
 
         # Drop all data

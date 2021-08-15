@@ -35,7 +35,7 @@ CREATE INDEX bev_addresses_locality ON bev_addresses(locality);
 CREATE INDEX bev_addresses_street ON bev_addresses(street);
 CREATE INDEX bev_addresses_house_number ON bev_addresses(house_number);
 
-comment on column bev_addresses.house_attribute is "Überwiegende Eigenschaft dieses Objektes:
+comment on column bev_addresses.house_attribute is 'Überwiegende Eigenschaft dieses Objektes:
 01: Gebäude mit einer Wohnung
 02: Gebäude mit zwei oder mehr Wohnungen
 03: Wohngebäude für Gemeinschaften
@@ -44,5 +44,8 @@ comment on column bev_addresses.house_attribute is "Überwiegende Eigenschaft di
 06: Groß- und Einzelhandelsgebäude
 07: Gebäude des Verkehrs- und Nachrichtenwesens
 08: Industrie- und Lagergebäude
-09: Gebäude für Kultur- und Freizeitzwecke sowie das Bildungs- und Gesundheitswesen";
+09: Gebäude für Kultur- und Freizeitzwecke sowie das Bildungs- und Gesundheitswesen';
+
+GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public to bev;
+GRANT SELECT ON ALL TABLES IN SCHEMA public to bev_read;
 
