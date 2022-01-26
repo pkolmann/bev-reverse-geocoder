@@ -186,9 +186,11 @@ $bevDate = $line['date'];
                 out.push("Hausfunktion: " + f.properties['house_function_string']+"<br/>");
             }
 
-//            for (var prop in f.properties) {
-//                out.push("   "+prop+": "+f.properties[prop]);
-//            }
+            if (window.location.search.substr(1).includes('debug')) {
+                for (var prop in f.properties) {
+                    out.push("   "+prop+": "+f.properties[prop]);
+                }
+            }
 
             l.bindPopup(out.join("<br />"));
         }
