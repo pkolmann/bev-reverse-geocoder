@@ -19,6 +19,7 @@ CREATE TABLE bev_addresses
   subaddress character varying,
   house_name character varying,
   address_type character varying,
+  house_function character varying,
   municipality_has_ambiguous_addresses boolean NOT NULL DEFAULT FALSE,
   house_attribute character varying,
   adrcd character varying,
@@ -45,6 +46,20 @@ comment on column bev_addresses.house_attribute is 'Überwiegende Eigenschaft di
 07: Gebäude des Verkehrs- und Nachrichtenwesens
 08: Industrie- und Lagergebäude
 09: Gebäude für Kultur- und Freizeitzwecke sowie das Bildungs- und Gesundheitswesen';
+
+comment on column bev_addresses.house_function is 'zugehörige Funktionskennziffer:
+00 nicht bearbeitet
+01 Apotheke
+02 Einsatzzentrale/Rettungsdienst
+03 Polizei
+04 Feuerwehr
+05 Gemeindeamt
+06 Krankenanstalt
+07 Tankstelle
+08 Schule
+99 zur Zeit keine Funktion zugeordnet
+Mehrfachangaben sind möglich';
+
 
 GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public to bev;
 GRANT SELECT ON ALL TABLES IN SCHEMA public to bev_read;

@@ -9,6 +9,7 @@ $max_limit = 500;
 
 $appDir = dirname(__FILE__, 5);
 require_once($appDir . DIRECTORY_SEPARATOR . "config.php");
+require_once($appDir . DIRECTORY_SEPARATOR . "enum.php");
 
 // Connecting, selecting database
 $dbconn = pg_connect(DB_CONNECT_STRING)
@@ -103,7 +104,7 @@ $query = <<<SQL
           END AS house_number, b.house_name, b.address_type,
           ST_Distance(ST_SetSRID(ST_MakePoint(\$1, \$2), \$3), b.point) AS distance,
           ST_X(ST_Transform(point::geometry, \$3)) AS lon, ST_Y(ST_Transform(point::geometry, \$3)) AS lat,
-          house_attribute, CONCAT(adrcd, subcd) AS house_id
+          house_attribute, house_function, CONCAT(adrcd, '-', subcd) AS adrcd
   FROM bev_addresses b
   WHERE ST_DWithin(ST_SetSRID(ST_MakePoint(\$1, \$2), \$3), b.point, \$4)
   ORDER BY distance
@@ -135,34 +136,20 @@ while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
     ];
     $addr['type'] = 'Feature';
     $addr['properties'] = $line;
-    switch ($line['house_attribute']) {
-        case '01':
-            $addr['properties']['house_attribute_string'] = 'Gebäude mit einer Wohnung';
-            break;
-        case '02':
-            $addr['properties']['house_attribute_string'] = 'Gebäude mit zwei oder mehr Wohnungen';
-            break;
-        case '03':
-            $addr['properties']['house_attribute_string'] = 'Wohngebäude für Gemeinschaften';
-            break;
-        case '04':
-            $addr['properties']['house_attribute_string'] = 'Hotels und ähnliche Gebäude';
-            break;
-        case '05':
-            $addr['properties']['house_attribute_string'] = 'Bürogebäude';
-            break;
-        case '06':
-            $addr['properties']['house_attribute_string'] = 'Groß- und Einzelhandelsgebäude';
-            break;
-        case '07':
-            $addr['properties']['house_attribute_string'] = 'Gebäude des Verkehrs- und Nachrichtenwesens';
-            break;
-        case '08':
-            $addr['properties']['house_attribute_string'] = 'Industrie- und Lagergebäude';
-            break;
-        case '09':
-            $addr['properties']['house_attribute_string'] = 'Gebäude für Kultur- und Freizeitzwecke sowie das Bildungs- und Gesundheitswesen';
-            break;
+    if (array_key_exists($line['house_attribute'], $house_attribute_string)) {
+        $addr['properties']['house_attribute_string'] = $house_attribute_string[$line['house_attribute']];
+    }
+    if ($line['house_function'] != '') {
+        $func = '';
+        foreach (explode(',', $line['house_function']) as $val) {
+            if ($func != '') {
+                $func .= ', ';
+            }
+            if (array_key_exists($val, $house_function_string)) {
+                $func .= $house_function_string[$val];
+            }
+        }
+        $addr['properties']['house_function_string'] = $func;
     }
 
     $addr['id'] = $i;

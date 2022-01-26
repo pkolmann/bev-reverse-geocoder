@@ -182,6 +182,10 @@ $bevDate = $line['date'];
                 out.push("Haustyp: " + f.properties['house_attribute_string']+"<br/>");
             }
 
+            if ('house_function_string' in f.properties && f.properties['house_function_string'] != '') {
+                out.push("Hausfunktion: " + f.properties['house_function_string']+"<br/>");
+            }
+
 //            for (var prop in f.properties) {
 //                out.push("   "+prop+": "+f.properties[prop]);
 //            }
@@ -293,6 +297,11 @@ $bevDate = $line['date'];
         // insert different label for the collapsed legend button.
         buttonHtml: 'Legende der Gebäudetypen'
     }).addTo(map);
+
+    L.control.scale({
+        imperial: false
+    }).addTo(map);
+
 </script>
 
 
