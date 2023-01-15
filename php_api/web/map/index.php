@@ -274,11 +274,13 @@ $bevDate = $line['date'];
         }
     });
     const position = new Position();
+    let posStr = '';
     map.addControl(position);
     map.addEventListener('mousemove', (event) => {
         let lat = Math.round(event.latlng.lat * 100000) / 100000;
         let lng = Math.round(event.latlng.lng * 100000) / 100000;
         position.updateHTML(lat, lng);
+        posStr = lat + ', ' + lng;
     });
 
 
@@ -304,10 +306,33 @@ $bevDate = $line['date'];
         imperial: false
     }).addTo(map);
 
+    let ctrlActive = false;
+    let cActive = false;
+    let vActive = false
+
+    document.body.addEventListener('keyup', event => {
+        if (event.key == 'Control') ctrlActive = false;
+        if (event.code == 'KeyC') cActive = false;
+        if (event.code == 'KeyV') vActive = false;
+    });
+
+    document.body.addEventListener('keydown', event => {
+        if (event.key == 'Control') ctrlActive = true;
+        if (ctrlActive == true && event.code == 'KeyC') {
+
+            // this disables the browsers default copy functionality
+            event.preventDefault()
+
+            // perform desired action(s) here...
+            console.log('Copied LatLng: ' + posStr);
+            navigator.clipboard.writeText(posStr).then(function() {
+                console.log('Async: Copying to clipboard was successful!');
+            }, function(err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        }
+      });
 </script>
-
-
-
 </body>
 </html>
 
