@@ -57,10 +57,23 @@ L.Control.Legend = L.Control.extend({
         var list = L.DomUtil.create('div', className + '-list');
         this.options.items.forEach(function (item) {
             var div = L.DomUtil.create('div', className + '-item', list);
-            var colorbox = L.DomUtil.create('div', className + '-color', div);
-            colorbox.innerHTML = '&nbsp;';
-            colorbox.style.backgroundColor = item.color;
-            L.DomUtil.create('div', className + '-text', div).innerHTML = item['label'];
+            if ('color' in item) {
+                var colorbox = L.DomUtil.create('div', className + '-color', div);
+                colorbox.innerHTML = '&nbsp;';
+                colorbox.style.backgroundColor = item.color;
+                L.DomUtil.create('div', className + '-text', div).innerHTML = item.label;
+            } else if ('checkboxname' in item) {
+                var outerdiv = L.DomUtil.create('div', 'outer-checkbox-' + item.checkboxname, div);
+                var checkbox = L.DomUtil.create('input', 'checkbox-' + item.checkboxname, outerdiv);
+                checkbox.type = 'checkbox';
+                checkbox.id = 'checkbox-' + item.checkboxname;
+                if ('checkboxchecked' in item) {
+                    checkbox.checked = item.checkboxchecked;
+                }
+                var label = L.DomUtil.create('label', 'checkbox-label-' + item.checkboxname, outerdiv);
+                label.htmlFor = 'checkbox-' + item.checkboxname;
+                label.innerHTML = item.label;
+            }
         });
 
         container.appendChild(list);

@@ -302,7 +302,11 @@ $bevDate = $line['date'];
         let lat = Math.round(event.latlng.lat * 100000) / 100000;
         let lng = Math.round(event.latlng.lng * 100000) / 100000;
         position.updateHTML(lat, lng);
-        posStr = '[[' + lat + ', ' + lng + '], ' + map.getZoom() + ']';
+        posStr = '[' + lat + ', ' + lng + ']';
+        const zoomAdd = document.getElementById('checkbox-zoom');
+        if (zoomAdd.checked) {
+            posStr = '[' + posStr + ', ' + map.getZoom() + ']';
+        }
     });
 
 
@@ -322,6 +326,15 @@ $bevDate = $line['date'];
         collapsed: true,
         // insert different label for the collapsed legend button.
         buttonHtml: 'Legende der Gebäudetypen'
+    }).addTo(map);
+
+    L.control.legend({
+        items: [
+            {checkboxname: "zoom", label: 'Zoom-Level mitkopieren', checkboxchecked: false},
+        ],
+        collapsed: true,
+        // insert different label for the collapsed legend button.
+        buttonHtml: 'Zwischenablage'
     }).addTo(map);
 
     L.control.scale({
