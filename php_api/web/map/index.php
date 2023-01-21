@@ -45,22 +45,44 @@ $bevDate = $line['date'];
 		html, body {
 			height: 100%;
 			margin: 0;
+            padding: 0;
 		}
-		#map {
-			width: 600px;
-			height: 400px;
-		}
+
+         #map {
+            height: 100%;
+            width: 100vw;
+            z-index: 0;
+        }
 
         .locator{
             font-size: 1.5em;
         }
-	</style>
 
-	<style>body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }</style>
+        .helpcontainer {
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            bottom: 20px;
+        }
+
+        #help {
+            padding: 1em 2em;
+            margin: 0 auto;
+            width: fit-content;
+            border-radius: 1.75em;
+            background-color: rgb(255, 48, 48);
+            display: none;
+            text-align: center;
+        }
+
+    </style>
 </head>
 <body>
 
-<div id='map'></div>
+<div class="helpcontainer">
+    <div id="help"></div>
+</div>
+<div id="map"></div>
 
 <script>
     let markers = {};
@@ -280,7 +302,7 @@ $bevDate = $line['date'];
         let lat = Math.round(event.latlng.lat * 100000) / 100000;
         let lng = Math.round(event.latlng.lng * 100000) / 100000;
         position.updateHTML(lat, lng);
-        posStr = lat + ', ' + lng;
+        posStr = '[[' + lat + ', ' + lng + '], ' + map.getZoom() + ']';
     });
 
 
@@ -327,11 +349,27 @@ $bevDate = $line['date'];
             console.log('Copied LatLng: ' + posStr);
             navigator.clipboard.writeText(posStr).then(function() {
                 console.log('Async: Copying to clipboard was successful!');
+                const help = document.getElementById('help');
+                help.innerHTML = posStr + ' copied to clipboard';
+                help.style.display = 'block';
+                window.setTimeout(function() {
+                    const help = document.getElementById('help');
+                    help.style.display = 'none';
+                }, 5000);
             }, function(err) {
                 console.error('Async: Could not copy text: ', err);
             });
         }
-      });
+    });
+
+    const help = document.getElementById('help');
+    help.innerHTML = "Copy current location and MapZoon with Ctrl-C";
+    help.style.display = 'block';
+    window.setTimeout(function() {
+        const help = document.getElementById('help');
+        help.style.display = 'none';
+    }, 5000);
+
 </script>
 </body>
 </html>
