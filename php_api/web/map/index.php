@@ -363,7 +363,7 @@ $bevDate = $line['date'];
             navigator.clipboard.writeText(posStr).then(function() {
                 console.log('Async: Copying to clipboard was successful!');
                 const help = document.getElementById('help');
-                help.innerHTML = posStr + ' copied to clipboard';
+                help.innerHTML = '"' + posStr + '" wurde in die Zwischenablage kopiert';
                 help.style.display = 'block';
                 window.setTimeout(function() {
                     const help = document.getElementById('help');
@@ -376,7 +376,7 @@ $bevDate = $line['date'];
     });
 
     const help = document.getElementById('help');
-    help.innerHTML = "Copy current location and MapZoon with Ctrl-C";
+    help.innerHTML = "Der aktuelle Standort kann mittels Strg-C in die Zwischenablage kopiert werden.";
     help.style.display = 'block';
     window.setTimeout(function() {
         const help = document.getElementById('help');
