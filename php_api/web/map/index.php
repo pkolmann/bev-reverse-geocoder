@@ -85,6 +85,19 @@ $bevDate = $line['date'];
 <div id="map"></div>
 
 <script>
+    let helpTimeout = undefined;
+    function helpDivTimeout() {
+        if (helpTimeout !== undefined) {
+            clearTimeout(helpTimeout);
+            helpTimeout = undefined;
+        }
+        helpTimeout = window.setTimeout(function() {
+            const help = document.getElementById('help');
+            help.style.display = 'none';
+            helpTimeout = undefined;
+        }, 5000);
+    }
+
     let markers = {};
     // https://mokole.com/palette.html
     const colors = {
@@ -365,10 +378,7 @@ $bevDate = $line['date'];
                 const help = document.getElementById('help');
                 help.innerHTML = '"' + posStr + '" wurde in die Zwischenablage kopiert';
                 help.style.display = 'block';
-                window.setTimeout(function() {
-                    const help = document.getElementById('help');
-                    help.style.display = 'none';
-                }, 5000);
+                helpDivTimeout();
             }, function(err) {
                 console.error('Async: Could not copy text: ', err);
             });
@@ -378,10 +388,7 @@ $bevDate = $line['date'];
     const help = document.getElementById('help');
     help.innerHTML = "Der aktuelle Standort kann mittels Strg-C in die Zwischenablage kopiert werden.";
     help.style.display = 'block';
-    window.setTimeout(function() {
-        const help = document.getElementById('help');
-        help.style.display = 'none';
-    }, 5000);
+    helpDivTimeout();
 
 </script>
 </body>
