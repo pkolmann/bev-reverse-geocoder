@@ -315,10 +315,19 @@ $bevDate = $line['date'];
         let lat = Math.round(event.latlng.lat * 100000) / 100000;
         let lng = Math.round(event.latlng.lng * 100000) / 100000;
         position.updateHTML(lat, lng);
-        posStr = '[' + lat + ', ' + lng + ']';
+        const arraybrackets = document.getElementById('checkbox-arraybrackets');
+        if (arraybrackets.checked) {
+            posStr = '[' + lat + ', ' + lng + ']';
+        } else {
+            posStr = '' + lat + ', ' + lng;
+        }
         const zoomAdd = document.getElementById('checkbox-zoom');
         if (zoomAdd.checked) {
-            posStr = '[' + posStr + ', ' + map.getZoom() + ']';
+            if (arraybrackets.checked) {
+                posStr = '[' + posStr + ', ' + map.getZoom() + ']';
+            } else {
+                posStr = '' + posStr + ', ' + map.getZoom();
+            }
         }
     });
 
@@ -344,6 +353,7 @@ $bevDate = $line['date'];
     L.control.legend({
         items: [
             {checkboxname: "zoom", label: 'Zoom-Level mitkopieren', checkboxchecked: false},
+            {checkboxname: "arraybrackets", label: 'Eckige Klammern mitkopieren', checkboxchecked: true},
         ],
         collapsed: true,
         // insert different label for the collapsed legend button.
