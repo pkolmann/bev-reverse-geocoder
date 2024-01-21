@@ -93,9 +93,31 @@ def main():
                 statement = "INSERT INTO " + \
                             args.table + \
                             "(municipality, locality, postcode, street, house_number, subaddress, house_name, address_type, " \
-                            "house_attribute, house_function, adrcd, subcd, point)" \
+                            "house_attribute, house_function, gkz, adrcd, subcd, point)" \
                             "VALUES (%s, %s, %s, %s, %s, %s, %s, 'unknown', " \
-                            "%s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s),4326))"
+                            "%s, %s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s),4326))"
+
+                # gemeinde  - 0
+                # ortschaft - 1
+                # plz - 2
+                # strasse - 3
+                # strassenzusatz - 4
+                # hausnrtext - 5
+                # hausnummer - 6
+                # hausname - 7
+                # haus_x - 8
+                # haus_y - 9
+                # gkz - 10
+                # adress_x - 11
+                # adress_y - 12
+                # subadresse - 13
+                # haus_bez - 14
+                # adrcd - 15
+                # subcd - 16
+                # okz - 17
+                # strassenname_mehrdeutig - 18
+                # hauseigenschaft - 19
+                # hausfunktion - 20
 
                 # Do some basic data validation.
                 if len(line) == 21 and (is_float(line[8]) or is_float(line[11])) and (is_float(line[9]) or is_float(line[12])):
@@ -103,11 +125,11 @@ def main():
                         # if haus_x is not float, use adress_x adress_y
                         if is_float(line[8]):
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[15], line[16], line[8], line[9],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[10], line[15], line[16], line[8], line[9],)
                            )
                         else:
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[15], line[16], line[11], line[12],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[10], line[15], line[16], line[11], line[12],)
                            )
 
                     except Exception as e:

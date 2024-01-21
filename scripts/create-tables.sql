@@ -22,6 +22,7 @@ CREATE TABLE bev_addresses
   house_function character varying,
   municipality_has_ambiguous_addresses boolean NOT NULL DEFAULT FALSE,
   house_attribute character varying,
+  gkz character varying,
   adrcd character varying,
   subcd character varying,
   point geography(Point,4326) NOT NULL
