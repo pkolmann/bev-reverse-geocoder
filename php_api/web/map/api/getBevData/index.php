@@ -104,6 +104,7 @@ $query = <<<SQL
           END AS house_number, b.house_name, b.address_type,
           ST_Distance(ST_SetSRID(ST_MakePoint(\$1, \$2), \$3), b.point) AS distance,
           ST_X(ST_Transform(point::geometry, \$3)) AS lon, ST_Y(ST_Transform(point::geometry, \$3)) AS lat,
+          ST_X(ST_Transform(address_point::geometry, \$3)) AS address_lon, ST_Y(ST_Transform(address_point::geometry, \$3)) AS address_lat,
           house_attribute, house_function, CONCAT(adrcd, '-', subcd) AS adrcd
   FROM bev_addresses b
   WHERE ST_DWithin(ST_SetSRID(ST_MakePoint(\$1, \$2), \$3), b.point, \$4)
@@ -136,6 +137,12 @@ while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
     ];
     $addr['type'] = 'Feature';
     $addr['properties'] = $line;
+    if (array_key_exists('address_lat', $line) && array_key_exists('address_lon', $line)) {
+        $addr['properties']['address_coordinates'] = [
+            floatval($line['address_lat']),
+            floatval($line['address_lon'])
+        ];
+    }
     if (array_key_exists($line['house_attribute'], $house_attribute_string)) {
         $addr['properties']['house_attribute_string'] = $house_attribute_string[$line['house_attribute']];
     }

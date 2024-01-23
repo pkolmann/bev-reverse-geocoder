@@ -177,7 +177,13 @@ $bevDate = $line['date'];
         layers: [osm]
     });
 
-    const layerControl = L.control.layers(llMapLayers).addTo(map);
+    const layerAddressCoords = L.featureGroup().addTo(map);
+    const optionalLayers = {
+        "Linie von Gebäude zu Adresse": layerAddressCoords
+    };
+
+    const layerControl = L.control.layers(llMapLayers, optionalLayers).addTo(map);
+
 
 
     function popUp(f,l){
@@ -220,6 +226,7 @@ $bevDate = $line['date'];
             if ('house_function_string' in f.properties && f.properties['house_function_string'] != '') {
                 out.push("Hausfunktion: " + f.properties['house_function_string']+"<br/>");
             }
+            out.push("Ende der Linie zeigt Position der Adresse an.<br/>");
 
             if (window.location.search.substr(1).includes('debug')) {
                 for (var prop in f.properties) {
@@ -254,6 +261,14 @@ $bevDate = $line['date'];
                         && geoJsonPoint.properties['house_attribute'] in colors
                     ) {
                         markerColor = colors[geoJsonPoint.properties['house_attribute']];
+                    }
+                    if ('properties' in geoJsonPoint 
+                        && 'address_coordinates' in geoJsonPoint.properties
+                    ) {
+                        console.log("address_coordinates", latlng, geoJsonPoint.properties.address_coordinates);
+                        console.log("address_coordinates", geoJsonPoint.properties.address_coordinates[0]);
+                        console.log("address_coordinates", geoJsonPoint.properties.address_coordinates[1]);
+                        L.polyline([latlng, geoJsonPoint.properties.address_coordinates], {color: 'red', weight: 2}).addTo(layerAddressCoords);
                     }
                     return L.circleMarker(latlng, {
                         color: markerColor,

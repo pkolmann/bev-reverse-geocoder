@@ -1,4 +1,4 @@
-    #!/usr/bin/env python3
+#!/usr/bin/env python3
 import argparse
 import psycopg2
 import sys
@@ -93,9 +93,10 @@ def main():
                 statement = "INSERT INTO " + \
                             args.table + \
                             "(municipality, locality, postcode, street, house_number, subaddress, house_name, address_type, " \
-                            "house_attribute, house_function, gkz, adrcd, subcd, point)" \
+                            "house_attribute, house_function, gkz, adrcd, subcd, point, address_point)" \
                             "VALUES (%s, %s, %s, %s, %s, %s, %s, 'unknown', " \
-                            "%s, %s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s),4326))"
+                            "%s, %s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s),4326), " \
+                            "ST_SetSRID(ST_MakePoint(%s, %s),4326))"
 
                 # gemeinde  - 0
                 # ortschaft - 1
@@ -125,11 +126,13 @@ def main():
                         # if haus_x is not float, use adress_x adress_y
                         if is_float(line[8]):
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[10], line[15], line[16], line[8], line[9],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20],
+                                line[10], line[15], line[16], line[8], line[9], line[11], line[12],)
                            )
                         else:
                             cursor.execute(statement, (
-                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20], line[10], line[15], line[16], line[11], line[12],)
+                                line[0], line[1], int(line[2]), line[3], line[6], line[13], line[7], line[19], line[20],
+                                line[10], line[15], line[16], line[11], line[12], line[11], line[12],)
                            )
 
                     except Exception as e:
