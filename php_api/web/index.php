@@ -22,7 +22,7 @@ $date = date("d. m. Y", strtotime($line['date']));
 
 ?>
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js" lang="de">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -67,12 +67,6 @@ $date = date("d. m. Y", strtotime($line['date']));
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
                 <a class="navbar-brand" href="/">BEV Address Data Reverse Geocoder</a>
             </div>
         </div>
