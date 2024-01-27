@@ -1,5 +1,13 @@
 <html>
 <body>
+<h1>Adressen sortiert nach der Entfernung zwischen Gebäude und Adresse</h1>
+<p>Kann nach Ort eingeschränkt werden (<b>*</b> für Wildcard möglich):
+    <form>
+        <label for="ort">Ort:</label>
+        <input type="text" id="ort" name="ort"></input>
+        <input type="submit" value="Submit">
+    </form>
+</p>
 <ul>
 <?php
 
@@ -24,6 +32,17 @@ $date = $line['date'];
 
 
 # Get the HTTP GET parameters and use default values where it makes sense.
+$WHERE = '';
+$WHERE_PARAMS = [];
+
+if (array_key_exists('ort', $_GET)) {
+    $WHERE = '(LOWER(b.municipality) LIKE LOWER($1) OR LOWER(b.locality) LIKE LOWER($1))';
+    $WHERE_PARAMS[] = str_replace('*', '%', $_GET['ort']);
+}
+
+if ($WHERE != '') {
+    $WHERE = "WHERE $WHERE";
+}
 
 $query = <<<SQL
   SELECT b.municipality, b.locality, b.postcode, b.street,
@@ -36,12 +55,13 @@ $query = <<<SQL
           ST_X(ST_Transform(address_point::geometry, 4326)) AS address_lon, ST_Y(ST_Transform(address_point::geometry, 4326)) AS address_lat,
           house_attribute, house_function, CONCAT(adrcd, '-', subcd) AS adrcd
   FROM bev_addresses b
+  $WHERE
   ORDER BY distance desc
-  LIMIT 2000
+  LIMIT 500
 SQL;
 
 $pgQuery = pg_prepare($dbconn, "addr_query", $query);
-$result = pg_execute($dbconn, "addr_query", array());
+$result = pg_execute($dbconn, "addr_query", $WHERE_PARAMS);
 if ($result === false) {
     $err = array();
     $err['status'] = 'server_error';
@@ -55,7 +75,7 @@ while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
     print "<li>";
 
     print "<a href=\"../?adrcd={$line['adrcd']}#18/{$line['lat']}/{$line['lon']}\" target=\"_blank\">";
-    print "Dist: {$line['distance']} - ";
+    print "Dist: ".round($line['distance'], 2)."m - ";
     print "{$line['street']} {$line['house_number']}";
     if (!empty($line['house_name'])) {
         print " ({$line['house_name']})";
