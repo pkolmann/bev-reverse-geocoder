@@ -99,6 +99,7 @@ $bevDate = $line['date'];
     }
 
     let markers = {};
+    let adrcds = {};
     // https://mokole.com/palette.html
     const colors = {
         '01': '#ff0000', // Gebäude mit einer Wohnung
@@ -215,7 +216,7 @@ $bevDate = $line['date'];
             }
 
 
-            if ('house_name' in f.properties && f.properties['house_name'] != '') {
+            if ('house_name' in f.properties && f.properties['house_name'] !== '') {
                 out.push("Haus Name: " + f.properties['house_name']+"<br/>");
             }
 
@@ -225,6 +226,10 @@ $bevDate = $line['date'];
 
             if ('house_function_string' in f.properties && f.properties['house_function_string'] != '') {
                 out.push("Hausfunktion: " + f.properties['house_function_string']+"<br/>");
+            }
+
+            if ('address_distance' in f.properties && f.properties['address_distance'] != '') {
+                out.push("Distanz zwischen Gebäude und Adresse: " + Math.round(f.properties['address_distance'] * 100) / 100 + "m<br/>");
             }
             out.push("Ende der Linie zeigt Position der Adresse an.<br/>");
 
@@ -246,6 +251,17 @@ $bevDate = $line['date'];
         url += '&limit=500';
         url += '&epsg=4326';
 
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('adrcd')) {
+            if (urlParams.get('adrcd') in adrcds) {
+                return null;
+            }
+            adrcds[urlParams.get('adrcd')] = 1;
+
+            url += '&adrcd=';
+            url += urlParams.get('adrcd');
+        }
+
         var geojsonLayer = new L.GeoJSON.AJAX(url,
             {
                 onEachFeature:popUp,
@@ -265,10 +281,11 @@ $bevDate = $line['date'];
                     if ('properties' in geoJsonPoint 
                         && 'address_coordinates' in geoJsonPoint.properties
                     ) {
-                        console.log("address_coordinates", latlng, geoJsonPoint.properties.address_coordinates);
-                        console.log("address_coordinates", geoJsonPoint.properties.address_coordinates[0]);
-                        console.log("address_coordinates", geoJsonPoint.properties.address_coordinates[1]);
                         L.polyline([latlng, geoJsonPoint.properties.address_coordinates], {color: 'red', weight: 2}).addTo(layerAddressCoords);
+                    }
+
+                    if (urlParams.has('adrcd')) {
+                        map.fitBounds([latlng, geoJsonPoint.properties.address_coordinates]);
                     }
                     return L.circleMarker(latlng, {
                         color: markerColor,
