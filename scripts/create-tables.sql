@@ -1,6 +1,9 @@
 -- Drop the tables first if it exists. This allows copy-pasting this entire file in any case.
 DROP TABLE IF EXISTS bev_date;
 DROP TABLE IF EXISTS bev_addresses;
+DROP TABLE IF EXISTS ort;
+DROP TABLE IF EXISTS bezirk;
+DROP TABLE IF EXISTS bundesland;
 
 -- Create the date table.
 CREATE TABLE bev_date
@@ -63,6 +66,44 @@ comment on column bev_addresses.house_function is 'zugehörige Funktionskennziff
 99 zur Zeit keine Funktion zugeordnet
 Mehrfachangaben sind möglich';
 
+create table bundesland
+(
+    blkz       integer not null
+        constraint bundesland_pk
+            primary key,
+    bundesland varchar not null
+);
+
+create table bezirk
+(
+    bzkz   integer not null
+        constraint bezirk_pk
+            primary key,
+    bezirk varchar not null,
+    blkz   integer not null
+        constraint bezirk_bundesland_blkz_fk
+            references bundesland
+            on delete restrict
+);
+
+create table ort
+(
+    gkz         integer not null,
+    name        varchar not null,
+    status      varchar,
+    amt_plz     integer,
+    weitere_plz varchar,
+    bzkz        integer not null
+        constraint orte_bezirk_bzkz_fk
+            references bezirk
+            on delete restrict,
+    constraint orte_pk
+        primary key (name, gkz)
+);
+create index orte_name_index
+    on ort (name);
+create index ort_bzkz_index
+    on ort (bzkz);
 
 GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public to bev;
 GRANT SELECT ON ALL TABLES IN SCHEMA public to bev_read;
