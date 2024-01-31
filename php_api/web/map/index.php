@@ -98,8 +98,40 @@ $bevDate = $line['date'];
         }, 5000);
     }
 
+    let clearButton = null;
+    function addClearButton() {
+        if (clearButton != null) {
+            return null;
+        }
+        clearButton = L.easyButton( '<span class="locator"><b>C</b></span>', function(){
+            minX = Infinity;
+            maxX = -Infinity;
+            minY = Infinity;
+            maxY = -Infinity;
+
+            window.location.search = "";
+            window.history.pushState({}, "", window.location);
+            map.removeControl(clearButton);
+        }).addTo(map);
+    }
+
+
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    function getBounds(x, y) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+        console.log("getBounds", minX, minY, maxX, maxY);
+        return [[minX, minY], [maxX, maxY]];
+    }
+
     let markers = {};
     let adrcds = {};
+    let streets = {};
     // https://mokole.com/palette.html
     const colors = {
         '01': '#ff0000', // Gebäude mit einer Wohnung
@@ -253,13 +285,30 @@ $bevDate = $line['date'];
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('adrcd')) {
-            if (urlParams.get('adrcd') in adrcds) {
+            const adrcd = urlParams.get('adrcd')
+            if (adrcd in adrcds) {
                 return null;
             }
-            adrcds[urlParams.get('adrcd')] = 1;
+            adrcds[adrcd] = 1;
 
             url += '&adrcd=';
-            url += urlParams.get('adrcd');
+            url += adrcd;
+            addClearButton();
+        }
+        if (urlParams.has('gkz') && urlParams.has('street')) {
+            const gkz = urlParams.get('gkz');
+            const street = urlParams.get('street');
+            if (!(gkz in streets)) {
+                streets[gkz] = {};
+            }
+            if (typeof streets[gkz] !== undefined && street in streets[gkz]) {
+                return null;
+            }
+            streets[gkz][street] = 1;
+
+            url += '&gkz=' + gkz;
+            url += '&street=' + street;
+            addClearButton();
         }
 
         var geojsonLayer = new L.GeoJSON.AJAX(url,
@@ -287,6 +336,10 @@ $bevDate = $line['date'];
                     if (urlParams.has('adrcd')) {
                         map.fitBounds([latlng, geoJsonPoint.properties.address_coordinates]);
                     }
+                    if (urlParams.has('gkz') && urlParams.has('street')) {
+                        map.fitBounds(getBounds(latlng.lat, latlng.lng));
+                    }
+
                     return L.circleMarker(latlng, {
                         color: markerColor,
                         fillOpacity: 0.5
@@ -304,7 +357,11 @@ $bevDate = $line['date'];
     var hash = new L.Hash(map);
 
     L.easyButton( '<span class="locator">&target;</span>', function(){
-	    map.locate({setView: true, maxZoom: 16});
+        if (minX < Infinity && maxX > -Infinity && minY < Infinity && maxY > -Infinity) {
+            map.fitBounds([[minX, minY], [maxX, maxY]]);
+        } else {
+            map.locate({setView: true, maxZoom: 16});
+        }
     }).addTo(map);
 
     var layerFeatureGroup = L.featureGroup([])

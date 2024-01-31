@@ -84,6 +84,8 @@ $date = date("d. m. Y", strtotime($line['date']));
 
     <h2>Map</h2>
     <p>A map view of the BEV address data can be found <a href="map/">here</a>.</p>
+    <h2>BEV Adressdaten Straßenliste</h2>
+    <p>A list of all streets in the BEV address data can be found <a href="strassen/">here</a>.</p>
     <h2>Example</h2>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="json">

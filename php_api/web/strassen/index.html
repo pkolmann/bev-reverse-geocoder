@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BEV Adressdaten Straßenliste</title>
+
+    <link href="page.css" rel="stylesheet" type="text/css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
+    <script lang="javascript">
+        const titleLong = "BEV Adressdaten Straßenliste";
+        let map = null;
+
+    function clickStreet(village, street) {
+            console.log(village, street);
+            document.getElementById("dirAbove").style.display = "none";
+            document.getElementById("back").style.display = "block";
+            document.getElementById("h1").innerHTML = village + " - " + street;
+            document.getElementById("map").style.display = "block";
+            const alist = document.getElementById("addressList");
+            alist.style.display = "none";
+
+            map = L.map('map').setView([47.71376, 16.18404], 13);
+            const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributers'
+            }).addTo(map);
+            const BasemapAT_highdpi = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmaphidpi/{type}/google3857/{z}/{y}/{x}.{format}', {
+                maxZoom: 19,
+                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+                type: 'normal',
+                format: 'jpeg',
+                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+            });
+            const BasemapAT_orthofoto = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/{type}/google3857/{z}/{y}/{x}.{format}', {
+                maxZoom: 19,
+                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+                type: 'normal',
+                format: 'jpeg',
+                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+            });
+            const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 19,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            });
+            const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 19,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            });
+
+            const OpenFireMap = L.tileLayer('http://openfiremap.org/hytiles/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="http://www.openfiremap.org">OpenFireMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            }).addTo(map);
+            const BasemapAT_overlay = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmapoverlay/{type}/google3857/{z}/{y}/{x}.{format}', {
+                maxZoom: 19,
+                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+                type: 'normal',
+                format: 'png',
+                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
+            });
+
+            const basemaps = {
+                'OpenStreetMap': osm,
+                'BasemapAT': BasemapAT_highdpi,
+                'Google Streets': googleStreets,
+                'BasemapAT Orthofoto': BasemapAT_orthofoto,
+                'Google Sat': googleSat
+            };
+
+            const overlays = {
+                OpenFireMap: OpenFireMap,
+                BasemapAT: BasemapAT_overlay
+            };
+
+            const layerControl = L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
+
+            console.log(location.hash);
+            const hash = new L.Hash(map);
+
+            const addrs = addressliste[village][street];
+            console.log("Addrs: ", addrs);
+            let minX = Infinity;
+            let minY = Infinity;
+            let maxX = -Infinity;
+            let maxY = -Infinity;
+
+            Object.keys(addrs).forEach((houseNumber) => {
+                console.log(addrs[houseNumber]);
+                const x = addrs[houseNumber][0];
+                const y = addrs[houseNumber][1];
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+
+                // Add houses to map
+                const houseMarker = new L.Marker(
+                    [y, x],
+                    {
+                        title: village + ", " + street + " " + houseNumber
+                    }
+                )
+                    .addTo(map)
+                    .bindPopup(village + ", " + street + " " + houseNumber);
+
+                // https://stackoverflow.com/a/61982880
+                houseMarker._icon.classList.add("houseHue");
+            });
+
+            map.fitBounds([[minY, minX], [maxY, maxX]]);
+        }
+
+        function getOrt(gkz) {
+            if (document.getElementById("body-g-"+gkz).innerHTML != "") {
+                return null;
+            }
+            console.log("getOrt: ", gkz);
+
+            const ortDiv = document.createElement('div');
+            ortDiv.classList.add("accordion");
+            ortDiv.setAttribute("id", "ortkg-"+gkz);
+            document.getElementById("body-g-"+gkz).appendChild(ortDiv);
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                const kgs = JSON.parse(this.responseText);
+                console.log(kgs);
+                kgs.forEach((kg) => {
+                    const kgkz = gkz + '-' + kg.kgkz;
+                    const kgDiv = document.createElement('div');
+                    kgDiv.classList.add("accordion-item");
+                    kgDiv.setAttribute("id", "kg-"+kgkz);
+                    kgDiv.innerHTML = '<h2 class="accordion-header" id="heading-kg-'+kgkz+'">' +
+                        '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-kg-'+kgkz+'" '+
+                          'aria-expanded="false" aria-controls="collapse-kg-'+kgkz+'">' +
+                        kg.name +
+                        "</button></h2>\n" +
+                        '<div id="collapse-kg-'+kgkz+'" class="accordion-collapse collapse" aria-labelledby="heading-kg-'+kgkz+'" data-bs-parent="#ortkg-'+gkz+'">' +
+                        '<div id="body-kg-'+kgkz+'" class="accordion-body">' +
+                        '</div></div>'
+                    ;
+                    console.log("getElement ortkg-"+gkz);
+                    document.getElementById("ortkg-"+gkz).appendChild(kgDiv);
+                    const kgStreetsUl = document.createElement('ul');
+                    kgStreetsUl.classList.add("streetList");
+                    kgStreetsUl.setAttribute("id", "kgStreets-"+kgkz);
+                    document.getElementById("body-kg-"+kgkz).appendChild(kgStreetsUl);
+
+                    console.log(kg.streets);
+                    kg.streets.forEach((street) => {
+                        const kgStreet = document.createElement('div');
+                        kgStreet.innerHTML = '<a href="../map/?gkz='+gkz+'&street='+street+'" target="_blank">'+street+'</a>';
+                        document.getElementById("kgStreets-"+kgkz).appendChild(kgStreet);
+                    });
+                });
+            }
+            xhttp.open("GET", "api/strassen/?gkz="+gkz);
+            xhttp.send();
+        }
+
+        function getOrte(bzkz) {
+            if (document.getElementById("body-bz-"+bzkz).innerHTML != "") {
+                return null;
+            }
+            console.log("getOrte: ", bzkz);
+
+            const orteDiv = document.createElement('div');
+            orteDiv.classList.add("accordion");
+            orteDiv.setAttribute("id", "orte-"+bzkz);
+            document.getElementById("body-bz-"+bzkz).appendChild(orteDiv);
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                const orte = JSON.parse(this.responseText);
+                orte.forEach((ort) => {
+                    const gkz = ort.gkz;
+                    const ortDiv = document.createElement('div');
+                    ortDiv.classList.add("accordion-item");
+                    ortDiv.setAttribute("id", "ort-"+gkz);
+                    ortDiv.innerHTML = '<h2 class="accordion-header" id="heading-g-'+gkz+'">' +
+                        '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-g-'+gkz+'" '+
+                          'aria-expanded="false" aria-controls="collapse-g-'+gkz+'" onclick="getOrt('+gkz+')">' +
+                        ort.name +
+                        "</button></h2>\n" +
+                        '<div id="collapse-g-'+gkz+'" class="accordion-collapse collapse" aria-labelledby="heading-g-'+gkz+'" data-bs-parent="#orte-'+bzkz+'">' +
+                        '<div id="body-g-'+gkz+'" class="accordion-body">' +
+                        '</div></div>'
+                    ;
+                    document.getElementById("orte-"+bzkz).appendChild(ortDiv);
+                });
+            }
+            xhttp.open("GET", "api/ort/?bzkz="+bzkz);
+            xhttp.send();
+         }
+
+        function getBezirke(blkz) {
+            if (document.getElementById("body-bl-"+blkz).innerHTML != "") {
+                return null;
+            }
+            console.log("getBezirke: ", blkz);
+
+            const bezirkeDiv = document.createElement('div');
+            bezirkeDiv.classList.add("accordion");
+            bezirkeDiv.setAttribute("id", "bezirke-"+blkz);
+            document.getElementById("body-bl-"+blkz).appendChild(bezirkeDiv);
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                const bezirke = JSON.parse(this.responseText);
+                bezirke.forEach((bezirk) => {
+                    const bzkz = bezirk.bzkz;
+                    const bezirkDiv = document.createElement('div');
+                    bezirkDiv.classList.add("accordion-item");
+                    bezirkDiv.setAttribute("id", "bezirk-"+bzkz);
+                    bezirkDiv.innerHTML = '<h2 class="accordion-header" id="heading-bz-'+bzkz+'">' +
+                        '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bz-'+bzkz+'" '+
+                          'aria-expanded="false" aria-controls="collapse-bz-'+bzkz+'" onclick="getOrte('+bzkz+')">' +
+                        bezirk.bezirk +
+                        "</button></h2>\n" +
+                        '<div id="collapse-bz-'+bzkz+'" class="accordion-collapse collapse" aria-labelledby="heading-bz-'+bzkz+'" data-bs-parent="#bezirke-'+blkz+'">' +
+                        '<div id="body-bz-'+bzkz+'" class="accordion-body">' +
+                        '</div></div>'
+                    ;
+                    document.getElementById("bezirke-"+blkz).appendChild(bezirkDiv);
+                });
+            }
+            xhttp.open("GET", "api/bezirk/?blkz="+blkz);
+            xhttp.send();
+         }
+
+        function initialize() {
+            document.getElementById("h1").innerHTML = titleLong;
+
+            const bundeslaenderDiv = document.createElement('div');
+            bundeslaenderDiv.classList.add("accordion");
+            bundeslaenderDiv.setAttribute("id", "bundeslaender");
+            document.getElementById("addressList").appendChild(bundeslaenderDiv);
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() {
+                const bundeslaender = JSON.parse(this.responseText);
+                bundeslaender.forEach((bundesland) => {
+                    const blkz = bundesland.blkz;
+                    const bundeslandDiv = document.createElement('div');
+                    bundeslandDiv.classList.add("accordion-item");
+                    bundeslandDiv.setAttribute("id", "bundesland-"+blkz);
+                    bundeslandDiv.innerHTML = '<h2 class="accordion-header" id="heading-bl-'+blkz+'">' +
+                        '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bl-'+blkz+'" '+
+                          'aria-expanded="false" aria-controls="collapse-bl-'+blkz+'" onclick="getBezirke('+blkz+')">' +
+                        bundesland.bundesland +
+                        "</button></h2>\n" +
+                        '<div id="collapse-bl-'+blkz+'" class="accordion-collapse collapse" aria-labelledby="heading-bl-'+blkz+'" data-bs-parent="#bundeslaender">' +
+                        '<div id="body-bl-'+blkz+'" class="accordion-body">' +
+                        '</div></div>'
+                    ;
+                    document.getElementById("bundeslaender").appendChild(bundeslandDiv);
+                });
+            }
+            xhttp.open("GET", "api/bundesland/");
+            xhttp.send();
+        }
+    </script>
+</head>
+<body onload="initialize()">
+<div id="page" class="page" style="">
+    <div><a href="../">Zurück</a></div>
+    <div id="header">
+        <h1 id="h1">Strassenverzeichnis</h1>
+    </div>
+    <div id="addressList"></div>
+    <div id='map'></div>
+</div>
+</body>
+</html>
+

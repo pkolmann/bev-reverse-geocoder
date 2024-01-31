@@ -68,6 +68,13 @@ if (array_key_exists('adrcd', $_GET)) {
     list($adrcd, $subcd) = explode('-', $_GET['adrcd']);
 }
 
+$gkz = null;
+$street = null;
+if (array_key_exists('gkz', $_GET) && array_key_exists('street', $_GET)) {
+    $gkz = $_GET['gkz'];
+    $street = $_GET['street'];
+}
+
 $query = <<<SQL
   SELECT srid
   FROM spatial_ref_sys
@@ -102,6 +109,7 @@ if (!is_numeric($limit) || intval($limit) > $max_limit || intval($limit) < 0) {
 }
 
 $WHERE = 'WHERE ST_DWithin(ST_SetSRID(ST_MakePoint($1, $2), $3), b.point, $4)';
+$ORDER = 'ORDER BY distance';
 $LIMIT = 'LIMIT $5';
 
 $params = [$lon, $lat, $epsg, $distance, $limit];
@@ -111,6 +119,14 @@ if (!is_null($adrcd) && !is_null($subcd)) {
     $LIMIT = '';
     $params[3] = $adrcd;
     $params[4] = $subcd;
+}
+if (!is_null($gkz) && !is_null($street)) {
+    $WHERE = 'WHERE CAST(gkz AS INT) = $4 AND street = $5';
+    $LIMIT = '';
+    $params[3] = $gkz;
+    $params[4] = $street;
+    $paramTypes[4] = 'varchar';
+    $ORDER = 'ORDER BY house_number, subaddress';
 }
 
 $paramTypesStr = implode(', ', $paramTypes);
@@ -128,7 +144,7 @@ $query = <<<SQL
           house_attribute, house_function, CONCAT(adrcd, '-', subcd) AS adrcd
   FROM bev_addresses b
   $WHERE
-  ORDER BY distance
+  $ORDER
   $LIMIT
 SQL;
 
