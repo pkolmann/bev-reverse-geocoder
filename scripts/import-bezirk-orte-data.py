@@ -16,7 +16,7 @@ def is_float(value):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Imports the Austrian Länder, Bezirke and Orte data.",
+    parser = argparse.ArgumentParser(description="Imports the Austrian Länder, Bezirke and Gemeinde data.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-H", "--hostname", dest="hostname", required=False, help="Host name or IP Address")
     parser.add_argument("-d", "--database", dest="database", default="gis", help="The name of the database")
@@ -86,7 +86,7 @@ def main():
     data = resp.data.decode('utf-8').split("\n")
     cr = csv.reader(data, quotechar='"', delimiter=";", quoting=csv.QUOTE_MINIMAL)
 
-    statement = "INSERT INTO bev.public.ort VALUES(%s, %s, %s, %s, %s, %s)"
+    statement = "INSERT INTO bev.public.gemeinde VALUES(%s, %s, %s, %s, %s, %s)"
     for row in cr:
         if len(row) < 2:
             continue
@@ -98,7 +98,7 @@ def main():
         try:
             cursor.execute(statement, (row[2], row[1], row[3], row[4], row[5], row[2][0:3],))
         except Exception as e:
-            print("Unable to insert the ort. Is the format correct? (Error: %s)" % e.__str__().strip())
+            print("Unable to insert the gemeinde. Is the format correct? (Error: %s)" % e.__str__().strip())
             sys.exit(1)
 
     # Commit all changes and close the connection.

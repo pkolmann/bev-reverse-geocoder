@@ -163,38 +163,38 @@
             xhttp.send();
         }
 
-        function getOrte(bzkz) {
+        function getGemeinde(bzkz) {
             if (document.getElementById("body-bz-"+bzkz).innerHTML != "") {
                 return null;
             }
-            console.log("getOrte: ", bzkz);
+            console.log("getGemeinde: ", bzkz);
 
-            const orteDiv = document.createElement('div');
-            orteDiv.classList.add("accordion");
-            orteDiv.setAttribute("id", "orte-"+bzkz);
-            document.getElementById("body-bz-"+bzkz).appendChild(orteDiv);
+            const gemeindeDiv = document.createElement('div');
+            gemeindeDiv.classList.add("accordion");
+            gemeindeDiv.setAttribute("id", "gemeinde-"+bzkz);
+            document.getElementById("body-bz-"+bzkz).appendChild(gemeindeDiv);
 
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() {
-                const orte = JSON.parse(this.responseText);
-                orte.forEach((ort) => {
-                    const gkz = ort.gkz;
-                    const ortDiv = document.createElement('div');
-                    ortDiv.classList.add("accordion-item");
-                    ortDiv.setAttribute("id", "ort-"+gkz);
-                    ortDiv.innerHTML = '<h2 class="accordion-header" id="heading-g-'+gkz+'">' +
+                const gemeinde = JSON.parse(this.responseText);
+                gemeinde.forEach((gemeinde) => {
+                    const gkz = gemeinde.gkz;
+                    const gemeindeDiv = document.createElement('div');
+                    gemeindeDiv.classList.add("accordion-item");
+                    gemeindeDiv.setAttribute("id", "gemeinde-"+gkz);
+                    gemeindeDiv.innerHTML = '<h2 class="accordion-header" id="heading-g-'+gkz+'">' +
                         '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-g-'+gkz+'" '+
                           'aria-expanded="false" aria-controls="collapse-g-'+gkz+'" onclick="getOrt('+gkz+')">' +
-                        ort.name +
+                        gemeinde.name +
                         "</button></h2>\n" +
-                        '<div id="collapse-g-'+gkz+'" class="accordion-collapse collapse" aria-labelledby="heading-g-'+gkz+'" data-bs-parent="#orte-'+bzkz+'">' +
+                        '<div id="collapse-g-'+gkz+'" class="accordion-collapse collapse" aria-labelledby="heading-g-'+gkz+'" data-bs-parent="#gemeinde-'+bzkz+'">' +
                         '<div id="body-g-'+gkz+'" class="accordion-body">' +
                         '</div></div>'
                     ;
-                    document.getElementById("orte-"+bzkz).appendChild(ortDiv);
+                    document.getElementById("gemeinde-"+bzkz).appendChild(gemeindeDiv);
                 });
             }
-            xhttp.open("GET", "api/ort/?bzkz="+bzkz);
+            xhttp.open("GET", "api/gemeinde/?bzkz="+bzkz);
             xhttp.send();
          }
 
@@ -219,7 +219,7 @@
                     bezirkDiv.setAttribute("id", "bezirk-"+bzkz);
                     bezirkDiv.innerHTML = '<h2 class="accordion-header" id="heading-bz-'+bzkz+'">' +
                         '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-bz-'+bzkz+'" '+
-                          'aria-expanded="false" aria-controls="collapse-bz-'+bzkz+'" onclick="getOrte('+bzkz+')">' +
+                          'aria-expanded="false" aria-controls="collapse-bz-'+bzkz+'" onclick="getGemeinde('+bzkz+')">' +
                         bezirk.bezirk +
                         "</button></h2>\n" +
                         '<div id="collapse-bz-'+bzkz+'" class="accordion-collapse collapse" aria-labelledby="heading-bz-'+bzkz+'" data-bs-parent="#bezirke-'+blkz+'">' +

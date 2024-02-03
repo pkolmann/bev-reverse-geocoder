@@ -1,7 +1,7 @@
 -- Drop the tables first if it exists. This allows copy-pasting this entire file in any case.
 DROP TABLE IF EXISTS bev_date;
 DROP TABLE IF EXISTS bev_addresses;
-DROP TABLE IF EXISTS ort;
+DROP TABLE IF EXISTS gemeinde;
 DROP TABLE IF EXISTS bezirk;
 DROP TABLE IF EXISTS bundesland;
 
@@ -86,7 +86,7 @@ create table bezirk
             on delete restrict
 );
 
-create table ort
+create table gemeinde
 (
     gkz         integer not null,
     name        varchar not null,
@@ -94,16 +94,16 @@ create table ort
     amt_plz     integer,
     weitere_plz varchar,
     bzkz        integer not null
-        constraint orte_bezirk_bzkz_fk
+        constraint gemeinde_bezirk_bzkz_fk
             references bezirk
             on delete restrict,
-    constraint orte_pk
+    constraint gemeinde_pk
         primary key (name, gkz)
 );
-create index orte_name_index
-    on ort (name);
-create index ort_bzkz_index
-    on ort (bzkz);
+create index gemeinde_name_index
+    on gemeinde(name);
+create index gemeindebzkz_index
+    on gemeinde(bzkz);
 
 GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public to bev;
 GRANT SELECT ON ALL TABLES IN SCHEMA public to bev_read;

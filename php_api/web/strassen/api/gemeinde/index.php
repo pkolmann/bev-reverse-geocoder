@@ -18,7 +18,7 @@ if (!array_key_exists('bzkz', $_GET)) {
 
 $query = <<<SQL
   SELECT gkz, name
-  FROM ort
+  FROM gemeinde
   WHERE bzkz = \$1
   ORDER BY 2
 SQL;
