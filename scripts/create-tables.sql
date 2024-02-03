@@ -1,6 +1,7 @@
 -- Drop the tables first if it exists. This allows copy-pasting this entire file in any case.
 DROP TABLE IF EXISTS bev_date;
 DROP TABLE IF EXISTS bev_addresses;
+DROP TABLE IF EXISTS ortschaft;
 DROP TABLE IF EXISTS gemeinde;
 DROP TABLE IF EXISTS bezirk;
 DROP TABLE IF EXISTS bundesland;
@@ -26,6 +27,7 @@ CREATE TABLE bev_addresses
   municipality_has_ambiguous_addresses boolean NOT NULL DEFAULT FALSE,
   house_attribute character varying,
   gkz character varying,
+  okz character varying,
   adrcd character varying,
   subcd character varying,
   point geography(Point,4326) NOT NULL,
@@ -41,6 +43,8 @@ CREATE INDEX bev_addresses_municipality ON bev_addresses(municipality);
 CREATE INDEX bev_addresses_locality ON bev_addresses(locality);
 CREATE INDEX bev_addresses_street ON bev_addresses(street);
 CREATE INDEX bev_addresses_house_number ON bev_addresses(house_number);
+CREATE INDEX bev_addresses_gemeinde_number ON bev_addresses(gkz);
+CREATE INDEX bev_addresses_orts_number ON bev_addresses(okz);
 
 comment on column bev_addresses.house_attribute is 'Überwiegende Eigenschaft dieses Objektes:
 01: Gebäude mit einer Wohnung
@@ -105,6 +109,18 @@ create index gemeinde_name_index
 create index gemeindebzkz_index
     on gemeinde(bzkz);
 
+create table ortschaft
+(
+    gkz      integer not null,
+    okz      integer not null,
+    ortsname varchar not null,
+    constraint ortschaft_pk
+        primary key (gkz, okz)
+);
+
+create index ortschaft_ortsname_index
+    on ortschaft (ortsname);
+
+
 GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE ON ALL TABLES IN SCHEMA public to bev;
 GRANT SELECT ON ALL TABLES IN SCHEMA public to bev_read;
-

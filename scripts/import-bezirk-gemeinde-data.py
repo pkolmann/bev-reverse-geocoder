@@ -2,6 +2,7 @@
 import argparse
 import csv
 import sys
+import os
 
 import psycopg2
 import urllib3
@@ -22,6 +23,7 @@ def main():
     parser.add_argument("-d", "--database", dest="database", default="gis", help="The name of the database")
     parser.add_argument("-u", "--user", dest="user", required=False, help="The database user")
     parser.add_argument("-p", "--password", dest="password", required=False, help="The database password")
+    parser.add_argument("-o", "--orte", dest="orte", required=True, help="The ORTSCHAFT.csv to read from")
     args = parser.parse_args()
 
     # Try to connect
@@ -100,6 +102,32 @@ def main():
         except Exception as e:
             print("Unable to insert the gemeinde. Is the format correct? (Error: %s)" % e.__str__().strip())
             sys.exit(1)
+
+    statement = "INSERT INTO ortschaft VALUES(%i, %i, %s)"
+
+    # Check ORTSCHAFT.csv
+    if os.path.isfile(args.orte):
+        try:
+            statement = "TRUNCATE TABLE ortschaft"
+            cursor.execute(statement)
+        except Exception as e:
+            print("Unable delete ortschaft data. (Error: %s)" % e.__str__().strip())
+            sys.exit(1)
+
+        # Iterate through the file and insert rows.
+        with open(args.orte) as f:
+            # Skip the first line as it contains only the header.
+            next(f)
+
+            for line in csv.reader(f, quotechar='"', delimiter=";", quoting=csv.QUOTE_MINIMAL):
+                try:
+                    print(line)
+                    cursor.execute(statement, (line[0], line[1], line[2]))
+                except Exception as e:
+                    print("I can't insert the row '%s'! The exception was: %s" % (line, e,))
+                    conn.rollback()
+                    conn.close()
+                    sys.exit(1)
 
     # Commit all changes and close the connection.
     conn.commit()
