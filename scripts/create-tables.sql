@@ -111,8 +111,8 @@ create index gemeindebzkz_index
 
 create table ortschaft
 (
-    gkz      integer not null,
-    okz      integer not null,
+    gkz      varchar not null,
+    okz      varchar not null,
     ortsname varchar not null,
     constraint ortschaft_pk
         primary key (gkz, okz)

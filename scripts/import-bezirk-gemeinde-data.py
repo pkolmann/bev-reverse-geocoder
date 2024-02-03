@@ -103,7 +103,6 @@ def main():
             print("Unable to insert the gemeinde. Is the format correct? (Error: %s)" % e.__str__().strip())
             sys.exit(1)
 
-    statement = "INSERT INTO ortschaft VALUES(%i, %i, %s)"
 
     # Check ORTSCHAFT.csv
     if os.path.isfile(args.orte):
@@ -119,6 +118,7 @@ def main():
             # Skip the first line as it contains only the header.
             next(f)
 
+            statement = "INSERT INTO ortschaft VALUES(%s, %s, %s)"
             for line in csv.reader(f, quotechar='"', delimiter=";", quoting=csv.QUOTE_MINIMAL):
                 try:
                     print(line)
