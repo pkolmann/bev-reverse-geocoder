@@ -14,109 +14,8 @@
     <script lang="javascript">
         const titleLong = "BEV Adressdaten Straßenliste";
         let map = null;
-
-    function clickStreet(village, street) {
-            console.log(village, street);
-            document.getElementById("dirAbove").style.display = "none";
-            document.getElementById("back").style.display = "block";
-            document.getElementById("h1").innerHTML = village + " - " + street;
-            document.getElementById("map").style.display = "block";
-            const alist = document.getElementById("addressList");
-            alist.style.display = "none";
-
-            map = L.map('map').setView([47.71376, 16.18404], 13);
-            const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributers'
-            }).addTo(map);
-            const BasemapAT_highdpi = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmaphidpi/{type}/google3857/{z}/{y}/{x}.{format}', {
-                maxZoom: 19,
-                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
-                type: 'normal',
-                format: 'jpeg',
-                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
-            });
-            const BasemapAT_orthofoto = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmaporthofoto30cm/{type}/google3857/{z}/{y}/{x}.{format}', {
-                maxZoom: 19,
-                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
-                type: 'normal',
-                format: 'jpeg',
-                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
-            });
-            const googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-                maxZoom: 19,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            });
-            const googleSat = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                maxZoom: 19,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-            });
-
-            const OpenFireMap = L.tileLayer('http://openfiremap.org/hytiles/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Map style: &copy; <a href="http://www.openfiremap.org">OpenFireMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-            }).addTo(map);
-            const BasemapAT_overlay = L.tileLayer('https://mapsneu.wien.gv.at/basemap/bmapoverlay/{type}/google3857/{z}/{y}/{x}.{format}', {
-                maxZoom: 19,
-                attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
-                type: 'normal',
-                format: 'png',
-                bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
-            });
-
-            const basemaps = {
-                'OpenStreetMap': osm,
-                'BasemapAT': BasemapAT_highdpi,
-                'Google Streets': googleStreets,
-                'BasemapAT Orthofoto': BasemapAT_orthofoto,
-                'Google Sat': googleSat
-            };
-
-            const overlays = {
-                OpenFireMap: OpenFireMap,
-                BasemapAT: BasemapAT_overlay
-            };
-
-            const layerControl = L.control.layers(basemaps, overlays, {collapsed: false}).addTo(map);
-
-            console.log(location.hash);
-            const hash = new L.Hash(map);
-
-            const addrs = addressliste[village][street];
-            console.log("Addrs: ", addrs);
-            let minX = Infinity;
-            let minY = Infinity;
-            let maxX = -Infinity;
-            let maxY = -Infinity;
-
-            Object.keys(addrs).forEach((houseNumber) => {
-                console.log(addrs[houseNumber]);
-                const x = addrs[houseNumber][0];
-                const y = addrs[houseNumber][1];
-                if (x < minX) minX = x;
-                if (x > maxX) maxX = x;
-                if (y < minY) minY = y;
-                if (y > maxY) maxY = y;
-
-                // Add houses to map
-                const houseMarker = new L.Marker(
-                    [y, x],
-                    {
-                        title: village + ", " + street + " " + houseNumber
-                    }
-                )
-                    .addTo(map)
-                    .bindPopup(village + ", " + street + " " + houseNumber);
-
-                // https://stackoverflow.com/a/61982880
-                houseMarker._icon.classList.add("houseHue");
-            });
-
-            map.fitBounds([[minY, minX], [maxY, maxX]]);
-        }
-
         function getOrt(gkz) {
-            if (document.getElementById("body-g-"+gkz).innerHTML != "") {
+            if (document.getElementById("body-g-"+gkz).innerHTML !== "") {
                 return null;
             }
             console.log("getOrt: ", gkz);
@@ -164,7 +63,7 @@
         }
 
         function getGemeinde(bzkz) {
-            if (document.getElementById("body-bz-"+bzkz).innerHTML != "") {
+            if (document.getElementById("body-bz-"+bzkz).innerHTML !== "") {
                 return null;
             }
             console.log("getGemeinde: ", bzkz);
@@ -199,7 +98,7 @@
          }
 
         function getBezirke(blkz) {
-            if (document.getElementById("body-bl-"+blkz).innerHTML != "") {
+            if (document.getElementById("body-bl-"+blkz).innerHTML !== "") {
                 return null;
             }
             console.log("getBezirke: ", blkz);
