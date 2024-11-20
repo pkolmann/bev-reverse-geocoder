@@ -162,7 +162,7 @@ $bevDate = $line['date'];
         maxZoom: 20,
         maxNativeZoom:18,
         attribution: addrData+', Map: <a href="https://www.basemap.at">basemap.at</a>',
-        subdomains: ["", "1", "2", "3", "4"],
+        subdomains: ["neu"],
         type: 'normal',
         format: 'png',
         bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
@@ -173,7 +173,7 @@ $bevDate = $line['date'];
         maxZoom: 20,
         maxNativeZoom:18,
         attribution: addrData+', Map: <a href="https://www.basemap.at">basemap.at</a>',
-        subdomains: ["", "1", "2", "3", "4"],
+        subdomains: ["neu"],
         type: 'bmaporthofoto30cm',
         format: 'jpeg',
         bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
@@ -184,7 +184,7 @@ $bevDate = $line['date'];
         maxZoom: 20,
         maxNativeZoom:18,
         attribution: addrData+', Map: <a href="https://www.basemap.at">basemap.at</a>',
-        subdomains: ["", "1", "2", "3", "4"],
+        subdomains: ["neu"],
         type: 'normal',
         format: 'png',
         bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
