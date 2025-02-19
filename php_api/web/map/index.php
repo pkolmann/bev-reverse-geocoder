@@ -349,11 +349,25 @@ $bevDate = $line['date'];
     }
 
     if (location.hash == '') {
-	    map.locate({setView: true, maxZoom: 16});
+        map.locate({setView: true, maxZoom: 16});
     }
 
 
     var hash = new L.Hash(map);
+
+
+    // log locate status
+    function onLocationFound(e) {
+        console.log("Location found: ", e);
+    }
+
+    function onLocationError(e) {
+        console.log("Location error: ", e);
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
 
     L.easyButton( '<span class="locator">&target;</span>', function(){
         if (minX < Infinity && maxX > -Infinity && minY < Infinity && maxY > -Infinity) {
