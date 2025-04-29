@@ -251,15 +251,34 @@ UPDATE bev_addresses SET street=split_part(street, ', ', 1)
     'Ranshofen'
   );*/
 
--- Set the column "municipality_has_ambiguous_addresses" to TRUE for addresses in municipalities that have ambiguous
--- addresses. This happens if one municipality has a specific combination of postcode and street distributed over
--- multiple localities (see Amstetten, for example). This is important because then, we need to set the "addr:city" tag
--- to the value of the locality and not the municipality so that the address is unique.
-UPDATE bev_addresses
-SET municipality_has_ambiguous_addresses = TRUE
-WHERE municipality IN (
-  SELECT municipality FROM (
-    SELECT DISTINCT
+---- Set the column "municipality_has_ambiguous_addresses" to TRUE for addresses in municipalities that have ambiguous
+---- addresses. This happens if one municipality has a specific combination of postcode and street distributed over
+---- multiple localities (see Amstetten, for example). This is important because then, we need to set the "addr:city" tag
+---- to the value of the locality and not the municipality so that the address is unique.
+--UPDATE bev_addresses
+--SET municipality_has_ambiguous_addresses = TRUE
+--WHERE municipality IN (
+--  SELECT municipality FROM (
+--    SELECT DISTINCT
+--      municipality,
+--      string_agg(locality, ', ' ORDER BY locality) AS localities,
+--      postcode,
+--      street,
+--      COUNT(DISTINCT(locality))
+--    FROM
+--      bev_addresses
+--    GROUP BY
+--      municipality,
+--      postcode,
+--      street,
+--      house_number
+--    HAVING
+--      COUNT(DISTINCT(locality)) > 1
+--  ) as non_unique_addresses
+--);
+-- Same as above but now only those Streets will get the flag that are relevant, not the whole municipality.
+WITH non_unique_locality_streets AS (
+	SELECT DISTINCT
       municipality,
       string_agg(locality, ', ' ORDER BY locality) AS localities,
       postcode,
@@ -274,8 +293,23 @@ WHERE municipality IN (
       house_number
     HAVING
       COUNT(DISTINCT(locality)) > 1
-  ) as non_unique_addresses
-);
+),
+non_unique_addresses AS (
+SELECT a.postcode, a.municipality, a.locality, a.street, a.house_number, a.gkz, a.okz, a.adrcd
+FROM bev_addresses a
+	INNER JOIN non_unique_locality_streets b ON a.municipality = b.municipality
+										AND a.street = b.street
+										AND a.postcode = b.postcode
+ORDER BY a.postcode, a.municipality, a.street, a.locality
+)
+UPDATE bev_addresses b
+SET municipality_has_ambiguous_addresses = TRUE
+FROM non_unique_addresses nu
+WHERE nu.municipality = b.municipality
+	AND nu.street = b.street
+	AND nu.postcode = b.postcode
+;
+
 
 -- Clean up the locality strings of the cities of Vienna, Graz, and Klagenfurt
 UPDATE bev_addresses SET locality = split_part(locality, ',', 2)
