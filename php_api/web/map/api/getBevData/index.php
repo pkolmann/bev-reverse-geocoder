@@ -186,8 +186,8 @@ while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
     $addr['properties'] = $line;
     if (array_key_exists('address_lat', $line) && array_key_exists('address_lon', $line)) {
         $addr['properties']['address_coordinates'] = [
-            floatval($line['address_lon']),
-            floatval($line['address_lat'])
+            floatval($line['address_lat']),
+            floatval($line['address_lon'])
         ];
         unset($addr['properties']['address_lat']);
         unset($addr['properties']['address_lon']);
