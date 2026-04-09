@@ -189,13 +189,23 @@ $bevDate = $line['date'];
         bounds: [[46.35877, 8.782379], [49.037872, 17.189532]]
     });
 
+    const bevMap = L.tileLayer("https://maps.bev.gv.at/tiles/karte/{z}/{x}/{y}.png", {
+        minZoom: 8,
+        maxNativeZoom: 16,
+        maxZoom: 20,
+        type: 'normal',
+        format: 'jpeg',
+        attribution: 'Map data: &copy; <a href="https://maps.bev.gv.at/">Austrian Map BEV CC BY 4.0</a>'
+    });
+
     const basemapOrthoOverlay = new L.LayerGroup([basemapOrtho, basemapOverlay]);
 
     const llMapLayers = {
         "Open Street Map": osm,
         "Basemap.at": basemap,
         "Basemap.at Orthofoto": basemapOrtho,
-        "Basemap.at Orthofoto mit Overlay": basemapOrthoOverlay
+        "Basemap.at Orthofoto mit Overlay": basemapOrthoOverlay,
+        "Austrian Map / ÖK": bevMap
     };
 
     var southWest = L.latLng(45.5, 8.5),
