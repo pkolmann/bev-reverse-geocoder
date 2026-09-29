@@ -1,6 +1,30 @@
 <?php
 header("content-type: application/json");
 
+function debug_mapped_query($query, $params) {
+    // Sort parameters in reverse order ($5, $4, $3...) so $10 doesn't accidentally replace $1
+    uksort($params, function($a, $b) {
+        return $b <=> $a;
+    });
+
+    foreach ($params as $index => $value) {
+        // Handle data types for SQL readability
+        if (is_null($value)) {
+            $sqlValue = 'NULL';
+        } elseif (is_numeric($value)) {
+            $sqlValue = $value;
+        } else {
+            // Basic escaping for debug viewing (not safe for production execution!)
+            $sqlValue = "'" . addslashes($value) . "'";
+        }
+
+        // $1 in array is usually index 0, so match '$' . ($index + 1)
+        $placeholder = '$' . ($index + 1);
+        $query = str_replace($placeholder, $sqlValue, $query);
+    }
+    return $query;
+}
+
 $default_distance = 30;
 $max_distance = 100;
 $default_limit = 5;
@@ -111,7 +135,8 @@ $query = <<<SQL
 SQL;
 
 $pgQuery = pg_prepare($dbconn, "addr_query", $query);
-$result = pg_execute($dbconn, "addr_query", array($lon, $lat, $epsg, $distance, $limit));
+$params = array($lon, $lat, $epsg, $distance, $limit);
+$result = pg_execute($dbconn, "addr_query", $params);
 if ($result === false) {
     $err = array();
     $err['status'] = 'server_error';
@@ -139,5 +164,6 @@ $res['copyright'] = '© Österreichisches Adressregister 2017, N 23806/2017 (Sti
     date('d. m. Y', $dateTime) . ')';
 $res['address_date'] = $date;
 $res['results'] = $addresses;
+//$res['query'] = debug_mapped_query($query, $params);
 
 print json_encode($res);
