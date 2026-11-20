@@ -57,6 +57,17 @@ $bevDate = $line['date'];
             font-size: 1.5em;
         }
 
+        .house-number-label {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            color: #111;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 0;
+            text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+        }
+
         .helpcontainer {
             position: absolute;
             z-index: 10;
@@ -131,6 +142,20 @@ $bevDate = $line['date'];
     let markers = {};
     let adrcds = {};
     let streets = {};
+    let houseNumberMarkers = [];
+
+    function updateHouseNumberLabels() {
+        const checkbox = document.getElementById('checkbox-house-numbers');
+        const showLabels = (checkbox === null || checkbox.checked) && map.getZoom() >= 18;
+        houseNumberMarkers.forEach(function(marker) {
+            if (showLabels) {
+                marker.openTooltip();
+            } else {
+                marker.closeTooltip();
+            }
+        });
+    }
+
     // https://mokole.com/palette.html
     const colors = {
         '01': '#ff0000', // Gebäude mit einer Wohnung
@@ -349,10 +374,27 @@ $bevDate = $line['date'];
                         map.fitBounds(getBounds(latlng.lat, latlng.lng));
                     }
 
-                    return L.circleMarker(latlng, {
+                    var marker = L.circleMarker(latlng, {
                         color: markerColor,
                         fillOpacity: 0.5
                     });
+                    if ('properties' in geoJsonPoint
+                        && 'house_number' in geoJsonPoint.properties
+                        && geoJsonPoint.properties['house_number'] !== ''
+                    ) {
+                        var houseNumber = document.createElement('span');
+                        houseNumber.textContent = geoJsonPoint.properties['house_number'];
+                        marker.bindTooltip(houseNumber, {
+                            permanent: true,
+                            direction: 'center',
+                            className: 'house-number-label',
+                            interactive: false
+                        });
+                        houseNumberMarkers.push(marker);
+                        marker.on('add', updateHouseNumberLabels);
+                    }
+
+                    return marker;
                 }
             }
         ).addTo(map);
@@ -472,6 +514,16 @@ $bevDate = $line['date'];
         buttonHtml: 'Zwischenablage'
     }).addTo(map);
 
+    L.control.legend({
+        items: [
+            {checkboxname: "house-numbers", label: 'Hausnummern anzeigen (ab Zoom 18)', checkboxchecked: true},
+        ],
+        collapsed: true,
+        buttonHtml: 'Beschriftung'
+    }).addTo(map);
+    document.getElementById('checkbox-house-numbers').addEventListener('change', updateHouseNumberLabels);
+    map.on('zoomend', updateHouseNumberLabels);
+
     L.control.scale({
         imperial: false
     }).addTo(map);
@@ -515,4 +567,3 @@ $bevDate = $line['date'];
 </script>
 </body>
 </html>
-
