@@ -142,17 +142,44 @@ $bevDate = $line['date'];
     let markers = {};
     let adrcds = {};
     let streets = {};
-    let houseNumberMarkers = [];
+    const houseNumberMarkers = [];
+    const visibleHouseNumbers = new Set();
+
+    function showHouseNumberLabels() {
+        const checkbox = document.getElementById('checkbox-house-numbers');
+        return (checkbox === null || checkbox.checked) && map.getZoom() >= 18;
+    }
+
+    function updateHouseNumberLabel(entry, bounds) {
+        const marker = entry.marker;
+        if (bounds && bounds.contains(marker.getLatLng()) && map.hasLayer(marker)) {
+            if (!visibleHouseNumbers.has(entry)) {
+                const houseNumber = document.createElement('span');
+                houseNumber.textContent = entry.houseNumber;
+                marker.bindTooltip(houseNumber, {
+                    permanent: true,
+                    direction: 'center',
+                    className: 'house-number-label',
+                    interactive: false
+                });
+                visibleHouseNumbers.add(entry);
+            }
+        } else if (visibleHouseNumbers.has(entry)) {
+            marker.unbindTooltip();
+            visibleHouseNumbers.delete(entry);
+        }
+    }
 
     function updateHouseNumberLabels() {
-        const checkbox = document.getElementById('checkbox-house-numbers');
-        const showLabels = (checkbox === null || checkbox.checked) && map.getZoom() >= 18;
-        houseNumberMarkers.forEach(function(marker) {
-            if (showLabels) {
-                marker.openTooltip();
-            } else {
-                marker.closeTooltip();
-            }
+        if (!showHouseNumberLabels()) {
+            visibleHouseNumbers.forEach(function(entry) {
+                updateHouseNumberLabel(entry, null);
+            });
+            return;
+        }
+        const bounds = map.getBounds();
+        houseNumberMarkers.forEach(function(entry) {
+            updateHouseNumberLabel(entry, bounds);
         });
     }
 
@@ -380,18 +407,20 @@ $bevDate = $line['date'];
                     });
                     if ('properties' in geoJsonPoint
                         && 'house_number' in geoJsonPoint.properties
+                        && geoJsonPoint.properties['house_number'] != null
                         && geoJsonPoint.properties['house_number'] !== ''
                     ) {
-                        var houseNumber = document.createElement('span');
-                        houseNumber.textContent = geoJsonPoint.properties['house_number'];
-                        marker.bindTooltip(houseNumber, {
-                            permanent: true,
-                            direction: 'center',
-                            className: 'house-number-label',
-                            interactive: false
+                        const entry = {
+                            marker: marker,
+                            houseNumber: geoJsonPoint.properties['house_number']
+                        };
+                        houseNumberMarkers.push(entry);
+                        marker.on('add', function() {
+                            updateHouseNumberLabel(entry, showHouseNumberLabels() ? map.getBounds() : null);
                         });
-                        houseNumberMarkers.push(marker);
-                        marker.on('add', updateHouseNumberLabels);
+                        marker.on('remove', function() {
+                            updateHouseNumberLabel(entry, null);
+                        });
                     }
 
                     return marker;
@@ -522,7 +551,7 @@ $bevDate = $line['date'];
         buttonHtml: 'Beschriftung'
     }).addTo(map);
     document.getElementById('checkbox-house-numbers').addEventListener('change', updateHouseNumberLabels);
-    map.on('zoomend', updateHouseNumberLabels);
+    map.on('moveend', updateHouseNumberLabels);
 
     L.control.scale({
         imperial: false
